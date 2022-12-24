@@ -14,7 +14,7 @@
       block:
         - name: Locale | Set timezone
           community.general.timezone:
-            name: "{{ timezone | default('Etc/UTC') }}"
+            name: "{{ timezone | default('America/Los_Angeles') }}"
     - name: Networking
       block:
         - name: Networking | Set hostname to inventory hostname
@@ -25,28 +25,33 @@
             path: /etc/hosts
             block: |
               127.0.1.1   {{ inventory_hostname }}
-    - name: Packages | Fedora
+
+    - name: Only run "update_cache=yes" if the last one is more than 3600 seconds ago
+      ansible.builtin.apt:
+        update_cache: yes
+        cache_valid_time: 3600
+
+    - name: Packages
       block:
-        - name: Packages | Install required packages
-          ansible.builtin.dnf:
-            name: "{{ fedora.packages | default([]) }}"
-            state: present
-            update_cache: true
-        - name: Packages | Remove leaf packages
-          ansible.builtin.dnf:
-            autoremove: true
-      when: ansible_facts['distribution'] == 'Fedora'
-    - name: Packages | Ubuntu
-      block:
+
         - name: Packages | Install required packages
           ansible.builtin.apt:
-            name: "{{ ubuntu.packages | default([]) }}"
+            name: "{{ packages | default([]) }}"
             state: present
             update_cache: true
-        - name: Packages | Remove leaf packages
+
+        - name: Remove useless packages from the cache
           ansible.builtin.apt:
-            autoremove: true
-      when: ansible_facts['distribution'] == 'Ubuntu'
+            autoclean: yes
+
+        - name: Remove dependencies that are no longer required
+          ansible.builtin.apt:
+            autoremove: yes
+
+        - name: Run the equivalent of "apt-get clean" as a separate step
+          apt:
+            clean: yes
+
     - name: User Configuration
       block:
         - name: User Configuration | Add additional SSH public keys
@@ -54,22 +59,14 @@
             user: "{{ ansible_user }}"
             key: "{{ item }}"
           loop: "{{ public_ssh_keys | default([]) }}"
-    - name: System Configuration (1)
-      block:
-        - name: System Configuration (1) | Disable firewalld | Fedora
-          ansible.builtin.systemd:
-            service: firewalld.service
-            enabled: false
-            masked: true
-            state: stopped
-          when: ansible_facts['distribution'] == 'Fedora'
-        - name: System Configuration (1) | Disable ufw | Ubuntu
-          ansible.builtin.systemd:
-            service: ufw.service
-            enabled: false
-            masked: true
-            state: stopped
-          when: ansible_facts['distribution'] == 'Ubuntu'
+          #    - name: System Configuration (1)
+          #      block:
+          #        - name: System Configuration (1) | Disable firewalld
+          #          ansible.builtin.systemd:
+          #            service: firewalld.service
+          #            enabled: false
+          #            masked: true
+          #            state: stopped
         - name: System Configuration (1) | Enable fstrim
           ansible.builtin.systemd:
             service: fstrim.timer
@@ -105,28 +102,23 @@
               net.bridge.bridge-nf-call-ip6tables: 1
               fs.inotify.max_user_watches: 524288
               fs.inotify.max_user_instances: 512
-        - name: System Configuration (2) | Disable swap | Fedora
-          ansible.builtin.dnf:
-            name: zram-generator-defaults
-            state: absent
-          when: ansible_facts['distribution'] == 'Fedora'
-        - name: System Configuration (2) | Disable swap at runtime | Ubuntu
-          ansible.builtin.command: swapoff -a
-          when:
-            - ansible_facts['distribution'] == 'Ubuntu'
-            - ansible_swaptotal_mb > 0
-        - name: System Configuration (2) | Disable swap at boot | Ubuntu
-          ansible.posix.mount:
-            name: "{{ item }}"
-            fstype: swap
-            state: absent
-          loop: ["none", "swap"]
-          when: ansible_facts['distribution'] == 'Ubuntu'
-        - name: System Configuration (2) | Permissive SELinux | Fedora
-          ansible.posix.selinux:
-            state: permissive
-            policy: targeted
-          when: ansible_facts['distribution'] == 'Fedora'
+
+#        - name: System Configuration (2) | Disable swap
+#          ansible.builtin.dnf:
+#            name: zram-generator-defaults
+#            state: absent
+
+        - name: Disable swap for current session
+          command: swapoff -a
+          become: true
+
+        - name: Disable swap permanently, persist reboots
+          replace:
+            path: /etc/fstab
+            regexp: '^(\s*)([^#\n]+\s+)(\w+\s+)swap(\s+.*)$'
+            replace: '#\1\2\3swap\4'
+            backup: yes
+
       notify: Reboot
 
   handlers:
