@@ -53,18 +53,6 @@ main() {
             > "${PROJECT_DIR}/kubernetes/flux/vars/cluster-secrets.sops.yaml"
         sops --encrypt --in-place "${PROJECT_DIR}/kubernetes/flux/vars/cluster-secrets.sops.yaml"
 
-        envsubst < "${PROJECT_DIR}/tmpl/kubernetes/cert-manager-secret.sops.yaml" \
-            > "${PROJECT_DIR}/kubernetes/apps/cert-manager/cert-manager/issuers/secret.sops.yaml"
-        sops --encrypt --in-place "${PROJECT_DIR}/kubernetes/apps/cert-manager/cert-manager/issuers/secret.sops.yaml"
-
-        envsubst < "${PROJECT_DIR}/tmpl/kubernetes/cloudflare-ddns-secret.sops.yaml" \
-            > "${PROJECT_DIR}/kubernetes/apps/networking/cloudflare-ddns/app/secret.sops.yaml"
-        sops --encrypt --in-place "${PROJECT_DIR}/kubernetes/apps/networking/cloudflare-ddns/app/secret.sops.yaml"
-
-        envsubst < "${PROJECT_DIR}/tmpl/kubernetes/external-dns-secret.sops.yaml" \
-            > "${PROJECT_DIR}/kubernetes/apps/networking/external-dns/app/secret.sops.yaml"
-        sops --encrypt --in-place "${PROJECT_DIR}/kubernetes/apps/networking/external-dns/app/secret.sops.yaml"
-
         envsubst < "${PROJECT_DIR}/tmpl/terraform/secret.sops.yaml" \
             > "${PROJECT_DIR}/terraform/cloudflare/secret.sops.yaml"
         sops --encrypt --in-place "${PROJECT_DIR}/terraform/cloudflare/secret.sops.yaml"
@@ -76,7 +64,6 @@ main() {
         # generate ansible hosts file and secrets
         generate_ansible_hosts
         generate_ansible_host_secrets
-        setup_github_webhook
         setup_weave_gitops
         success
     fi
@@ -292,23 +279,6 @@ verify_git_repository() {
     }
     popd >/dev/null 2>&1
     export GIT_TERMINAL_PROMPT=1
-}
-
-setup_github_webhook() {
-    _has_envar "BOOTSTRAP_FLUX_GITHUB_WEBHOOK_SECRET"
-
-    WEBHOOK_SECRET="${BOOTSTRAP_FLUX_GITHUB_WEBHOOK_SECRET}"
-
-    if [[ "${WEBHOOK_SECRET}" == "generated" ]]; then
-        WEBHOOK_SECRET="$(openssl rand -base64 30)"
-    fi
-
-    export BOOTSTRAP_FLUX_GITHUB_WEBHOOK_SECRET="${WEBHOOK_SECRET}"
-    _log "INFO" "Using GitHub Token '${WEBHOOK_SECRET}' for Flux"
-
-    envsubst < "${PROJECT_DIR}/tmpl/kubernetes/github-webhook-token-secret.sops.yaml" \
-        > "${PROJECT_DIR}/kubernetes/apps/flux-system/addons/webhooks/github/secret.sops.yaml"
-    sops --encrypt --in-place "${PROJECT_DIR}/kubernetes/apps/flux-system/addons/webhooks/github/secret.sops.yaml"
 }
 
 setup_weave_gitops() {
