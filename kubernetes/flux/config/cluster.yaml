@@ -8,7 +8,7 @@ spec:
   interval: 30m
   ref:
     branch: main
-  url: "git@github.com:patkaehuaea/argocd-cluster-template.git"
+  url: "https://github.com/patkaehuaea/flux-cluster.git"
   ignore: |
     # exclude all
     /*
