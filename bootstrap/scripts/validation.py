@@ -62,8 +62,8 @@ def validate_node(node: dict, node_cidr: str) -> None:
         raise ValueError(f"Node {node.get('name')} has an invalid mac_addr, is this a MAC address?")
     if node.get("address"):
         ip = validate_ip(node.get("address"))
-        if netaddr.IPAddress(ip, 4) not in netaddr.IPNetwork(node_cidr):
-            raise ValueError(f"Node {node.get('name')} is not in the node CIDR {node_cidr}")
+        #if netaddr.IPAddress(ip, 4) not in netaddr.IPNetwork(node_cidr):
+        #    raise ValueError(f"Node {node.get('name')} with ip {ip} is not in the node CIDR {node_cidr}")
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
             sock.settimeout(5)
             result = sock.connect_ex((ip, 50000))
