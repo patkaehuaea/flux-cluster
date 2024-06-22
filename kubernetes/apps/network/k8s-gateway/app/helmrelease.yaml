@@ -26,7 +26,6 @@ spec:
     ttl: 1
     extraZonePlugins:
       - name: log
-      - name: debug
     service:
       type: LoadBalancer
       port: 53
