@@ -52,7 +52,7 @@ spec:
         rollOutPods: true
         ingress:
           enabled: true
-          className: internal
+          className: external
           hosts: ["hubble.${SECRET_DOMAIN}"]
     operator:
       prometheus:
