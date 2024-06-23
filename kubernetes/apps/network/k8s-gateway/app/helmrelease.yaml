@@ -8,7 +8,7 @@ spec:
   chart:
     spec:
       chart: k8s-gateway
-      version: 2.0.4
+      version: 2.4.0
       sourceRef:
         kind: HelmRepository
         name: k8s-gateway
@@ -24,8 +24,6 @@ spec:
     fullnameOverride: k8s-gateway
     domain: "${SECRET_DOMAIN}"
     ttl: 1
-    extraZonePlugins:
-      - name: log
     service:
       type: LoadBalancer
       port: 53

@@ -25,16 +25,43 @@ spec:
       retries: 3
   values:
     fullnameOverride: *app
-    provider: cloudflare
-    env:
-      - name: CF_API_TOKEN
-        valueFrom:
-          secretKeyRef:
-            name: external-dns-secret
-            key: api-token
+    logLevel: debug
+    provider:
+      name: webhook
+      webhook:
+        image:
+          repository: ghcr.io/kashalls/external-dns-unifi-webhook
+          tag: v0.2.0
+        env:
+          - name: UNIFI_HOST
+            value: "https://10.0.80.1"
+          - name: UNIFI_USER
+            valueFrom:
+              secretKeyRef:
+                name: external-dns-unifi-secret
+                key: username
+          - name: UNIFI_PASS
+            valueFrom:
+              secretKeyRef:
+                name: external-dns-unifi-secret
+                key: password
+          - name: LOG_LEVEL
+            value: debug
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: http-wh-metrics
+          initialDelaySeconds: 10
+          timeoutSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /readyz
+            port: http-wh-metrics
+          initialDelaySeconds: 10
+          timeoutSeconds: 5
     extraArgs:
       - --ingress-class=external
-      - --cloudflare-proxied
+      - --ignore-ingress-tls-spec
       - --crd-source-apiversion=externaldns.k8s.io/v1alpha1
       - --crd-source-kind=DNSEndpoint
     policy: sync
@@ -42,7 +69,5 @@ spec:
     txtPrefix: k8s.
     txtOwnerId: default
     domainFilters: ["${SECRET_DOMAIN}"]
-    serviceMonitor:
-      enabled: true
     podAnnotations:
       secret.reloader.stakater.com/reload: external-dns-secret
