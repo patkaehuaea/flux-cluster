@@ -60,10 +60,9 @@ spec:
           initialDelaySeconds: 10
           timeoutSeconds: 5
     extraArgs:
-      - --ingress-class=external
+      - --ingress-class=internal
       - --ignore-ingress-tls-spec
       - --crd-source-apiversion=externaldns.k8s.io/v1alpha1
-      - --crd-source-kind=DNSEndpoint
     policy: sync
     sources: ["crd", "ingress"]
     txtPrefix: k8s.
