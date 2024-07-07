@@ -25,7 +25,7 @@ spec:
     keepHistory: false
   dependsOn:
     - name: openebs
-      namespace: kube-system
+      namespace: openebs-system
   values:
     deploymentStrategy:
       type: Recreate
