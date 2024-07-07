@@ -24,7 +24,7 @@ spec:
   uninstall:
     keepHistory: false
   dependsOn:
-    - name: local-path-provisioner
+    - name: openebs
       namespace: kube-system
   values:
     deploymentStrategy:
@@ -163,6 +163,6 @@ spec:
             - *host
     persistence:
       enabled: true
-      storageClassName: local-path
+      storageClassName: openebs-hostpath
     testFramework:
       enabled: false
