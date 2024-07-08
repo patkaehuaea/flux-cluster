@@ -74,6 +74,7 @@ spec:
         ingress:
           main:
             enabled: true
+            ingressClassName: internal
             annotations:
               # Example annotations to add Homepage to your Homepage!
               gethomepage.dev/enabled: "true"
@@ -82,7 +83,10 @@ spec:
               gethomepage.dev/group: "Dynamic"
               gethomepage.dev/icon: "homepage.png"
             hosts:
-              - host: homepage.example.com
-                paths:
-                  - path: /
-                    pathType: Prefix
+              - &host "homepage.${SECRET_DOMAIN}"
+            paths:
+              - path: /
+                pathType: Prefix
+            tls:
+              - hosts:
+                  - *host
