@@ -83,7 +83,7 @@ spec:
           gethomepage.dev/group: "Dynamic"
           gethomepage.dev/icon: "homepage.png"
         hosts:
-          - host: &host homepage.patk.dev
+          - host: &host "home.${SECRET_DOMAIN}"
             paths:
               - path: /
                 pathType: Prefix
