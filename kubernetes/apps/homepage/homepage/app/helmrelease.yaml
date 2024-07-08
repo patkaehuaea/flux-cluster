@@ -83,10 +83,10 @@ spec:
           gethomepage.dev/group: "Dynamic"
           gethomepage.dev/icon: "homepage.png"
         hosts:
-          - host: homepage.patk.dev
+          - host: &host homepage.patk.dev
             paths:
               - path: /
                 pathType: Prefix
         tls:
           - hosts:
-              - homepage.patk.dev
+              - *host
