@@ -23,26 +23,27 @@ spec:
       retries: 3
   values:
     config:
+      layout:
+        Management:
+          style: row
+          columns: 3
       bookmarks:
         - Developer:
             - Github:
                 - abbr: GH
                   href: https://github.com/
       services:
-        - My First Group:
-            - My First Service:
-                href: http://localhost/
-                description: Homepage is awesome
+        - Management:
+            - Unifi:
+                href: https://unifi.ui.com
+                description: Unifi Site Manager
+            - Pihole:
+                href: https://pihole.kaehuaea.me/admin/
+                description: Network-wide Ad Blocking
+            - Z-Wave JS UI:
+                href: https://zwave-js-ui.kaehuaea.me:8091
+                description: Full featured Z-Wave Control Panel
 
-        - My Second Group:
-            - My Second Service:
-                href: http://localhost/
-                description: Homepage is the best
-
-        - My Third Group:
-            - My Third Service:
-                href: http://localhost/
-                description: Homepage is 😎
       widgets:
         # show the kubernetes widget, with the cluster summary and individual nodes
         - kubernetes:
