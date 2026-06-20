@@ -4,6 +4,7 @@ metadata:
   name: letsencrypt-production
 spec:
   acme:
+    profile: shortlived
     server: https://acme-v02.api.letsencrypt.org/directory
     email: "${SECRET_ACME_EMAIL}"
     privateKeySecretRef:
@@ -24,6 +25,7 @@ metadata:
   name: letsencrypt-staging
 spec:
   acme:
+    profile: shortlived
     server: https://acme-staging-v02.api.letsencrypt.org/directory
     email: "${SECRET_ACME_EMAIL}"
     privateKeySecretRef:
