@@ -1,0 +1,8 @@
+# Custom (legacy talconfig): mirror docker.io via GCR to avoid rate limits.
+# Drop into talos/patches/global/ after `task configure`.
+machine:
+  registries:
+    mirrors:
+      docker.io:
+        endpoints:
+          - https://mirror.gcr.io

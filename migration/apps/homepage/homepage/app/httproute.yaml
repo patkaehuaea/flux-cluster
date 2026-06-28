@@ -1,0 +1,18 @@
+---
+# Replaces the legacy `ingress.main` (ingressClassName: internal).
+# Exposes homepage on the internal envoy gateway; k8s-gateway serves LAN DNS for it.
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: homepage
+spec:
+  hostnames:
+    - "home.${SECRET_DOMAIN}"
+  parentRefs:
+    - name: envoy-internal
+      namespace: network
+      sectionName: https
+  rules:
+    - backendRefs:
+        - name: homepage
+          port: 3000

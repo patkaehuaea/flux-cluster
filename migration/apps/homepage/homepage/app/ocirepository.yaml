@@ -1,0 +1,19 @@
+---
+# TODO(decide): the legacy jameswynn/homepage chart (1.2.3) is deprecated and has NO
+# maintained OCI successor with the same values schema. Options:
+#   1. m0nsterrr's chart below (real OCI, but DIFFERENT values schema — helmrelease.yaml
+#      values almost certainly need adjusting; verify config/serviceAccount/service keys).
+#   2. Deploy homepage via bjw-s app-template (oci://ghcr.io/bjw-s-labs/helm/app-template),
+#      like the upstream `echo` app — most aligned with the new template's conventions.
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: homepage
+spec:
+  interval: 15m
+  layerSelector:
+    mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
+    operation: copy
+  ref:
+    tag: 4.13.0 # TODO verify against the chosen chart
+  url: oci://ghcr.io/m0nsterrr/helm-charts/homepage # TODO confirm choice + reconcile values

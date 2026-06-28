@@ -1,0 +1,14 @@
+---
+# Verified: home-operations charts-mirror hosts openebs.
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: openebs
+spec:
+  interval: 15m
+  layerSelector:
+    mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
+    operation: copy
+  ref:
+    tag: 4.0.1 # Renovate will bump
+  url: oci://ghcr.io/home-operations/charts-mirror/openebs

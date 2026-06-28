@@ -1,0 +1,10 @@
+# Custom (legacy talconfig):
+#  - rotate-server-certificates: REQUIRED by the kubelet-csr-approver app.
+#  - disableSearchDomain: legacy preference.
+# Drop into talos/patches/global/ after `task configure`.
+machine:
+  kubelet:
+    extraArgs:
+      rotate-server-certificates: true
+  network:
+    disableSearchDomain: true

@@ -1,0 +1,15 @@
+---
+# Verified: the grafana chart moved from grafana/helm-charts to the grafana-community
+# org, published as OCI on ghcr. Confirm the current tag (Renovate keeps it current).
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: grafana
+spec:
+  interval: 15m
+  layerSelector:
+    mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
+    operation: copy
+  ref:
+    tag: 8.3.2 # TODO bump to current grafana-community tag; Renovate will bump
+  url: oci://ghcr.io/grafana-community/helm-charts/grafana

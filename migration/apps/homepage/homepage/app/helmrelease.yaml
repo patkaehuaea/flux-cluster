@@ -1,0 +1,65 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: homepage
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: homepage
+  interval: 1h
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  values:
+    config:
+      layout:
+        Management:
+          style: row
+          columns: 3
+      bookmarks:
+        - Developer:
+            - Github:
+                - abbr: GH
+                  href: https://github.com/
+      services:
+        - Management:
+            - Unifi:
+                href: https://unifi.ui.com
+                description: Unifi Site Manager
+            - Pihole:
+                href: https://pihole.kaehuaea.me/admin/
+                description: Network-wide Ad Blocking
+            - Z-Wave JS UI:
+                href: https://zwave-js-ui.kaehuaea.me:8091
+                description: Full featured Z-Wave Control Panel
+      widgets:
+        - kubernetes:
+            cluster:
+              show: true
+              cpu: true
+              memory: true
+              showLabel: true
+              label: "cluster"
+            nodes:
+              show: true
+              cpu: true
+              memory: true
+              showLabel: true
+        - search:
+            provider: duckduckgo
+            target: _blank
+      kubernetes:
+        mode: cluster
+      settings:
+    # The service account is necessary to allow discovery of other services
+    serviceAccount:
+      create: true
+      name: homepage
+    # This enables the service account to access the necessary resources
+    enableRbac: true
+    # NOTE: ingress removed — exposure is now via ./httproute.yaml on envoy-internal.

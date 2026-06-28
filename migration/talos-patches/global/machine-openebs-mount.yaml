@@ -1,0 +1,13 @@
+# Custom (legacy talconfig): bind-mount for openebs-hostpath localpv.
+# REQUIRED by the openebs app (storageClass openebs-hostpath, basePath /var/openebs/local).
+# Drop into talos/patches/global/ after `task configure`.
+machine:
+  kubelet:
+    extraMounts:
+      - destination: /var/openebs/local
+        type: bind
+        source: /var/openebs/local
+        options:
+          - bind
+          - rshared
+          - rw
